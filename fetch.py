@@ -20,6 +20,7 @@ response =requests.get(
     }
 )
 
+timestamp = datetime.now(timezone.utc).isoformat()
 response.raise_for_status()
 response_json = response.json()
 
@@ -43,7 +44,7 @@ with open("crypto_data.csv", "a", newline="") as csvfile:
     for crypto in response_json["data"]:
         crypto_data = response_json["data"][crypto]
         writer.writerow({
-            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "timestamp": timestamp,
             "name": crypto_data["name"],
             "symbol": crypto_data["symbol"],
             "price": crypto_data["quote"]["USD"]["price"],
