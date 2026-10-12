@@ -3,7 +3,7 @@ AWS Lambda: fetch Monero, Zcash and Dash quotes from CoinMarketCap
 and append them to a CSV file stored in S3.
 
 Environment variables:
-  CMC_API_KEY  - CoinMarketCap Pro API key (required)
+  CMC_API_KEY  - CoinMarketCap Pro API key from parameter store (required)
   BUCKET_NAME  - S3 bucket that holds the CSV (required)
   CSV_KEY      - object key for the CSV (default: crypto_data.csv)
   SLUGS        - comma-separated CoinMarketCap slugs (default: monero,zcash,dash)
@@ -31,7 +31,7 @@ FIELDNAMES = [
 ]
 
 s3 = boto3.client("s3")
-apikey = boto3.client("ssm").get_parameter(Name="/crypto/cmc_api_key", WithDecryption=True)["Parameter"]["Value"]
+apikey = boto3.client("ssm").get_parameter(Name="/privacy-coins/cmc-api-key", WithDecryption=True)["Parameter"]["Value"]
 
 def fetch_quotes(api_key, slugs):
     query = urllib.parse.urlencode({"slug": slugs})
