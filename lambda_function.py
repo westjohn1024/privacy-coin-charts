@@ -31,7 +31,7 @@ FIELDNAMES = [
 ]
 
 s3 = boto3.client("s3")
-
+apikey = boto3.client("ssm").get_parameter(Name="/crypto/cmc_api_key", WithDecryption=True)["Parameter"]["Value"]
 
 def fetch_quotes(api_key, slugs):
     query = urllib.parse.urlencode({"slug": slugs})
@@ -55,7 +55,7 @@ def read_existing_csv(bucket, key):
 
 
 def lambda_handler(event, context):
-    api_key = os.environ["CMC_API_KEY"]
+    api_key = apikey
     bucket = os.environ["BUCKET_NAME"]
     key = os.environ.get("CSV_KEY", "crypto_data.csv")
     slugs = os.environ.get("SLUGS", "monero,zcash,dash")
