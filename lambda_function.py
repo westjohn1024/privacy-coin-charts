@@ -58,7 +58,7 @@ def lambda_handler(event, context):
     api_key = apikey
     bucket = os.environ["BUCKET_NAME"]
     key = os.environ.get("CSV_KEY", "crypto_data.csv")
-    slugs = os.environ.get("SLUGS", "monero,zcash,dash")
+    slugs = os.environ.get("SLUGS", "monero,zcash,dash,tari")
 
     timestamp = datetime.now(timezone.utc).isoformat()
     response_json = fetch_quotes(api_key, slugs)
@@ -79,7 +79,7 @@ def lambda_handler(event, context):
         }
         rows.append(row)
         logger.info(
-            "%s (%s): $%.2f, Market Cap: $%.2f",
+            "%s (%s): $%.6f, Market Cap: $%.6f",
             row["name"], row["symbol"], row["price"], row["market_cap"],
         )
 
