@@ -1,0 +1,30 @@
+name: Deploy Lambda
+
+on:
+  push:
+    branches: [main]
+    paths: [lambda_function.py]
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::107368385134:role/github-deploy-privacy-coins
+          aws-region: us-east-2
+
+      - name: Zip the code
+        run: zip function.zip lambda_function.py
+
+      - name: Deploy to Lambda
+        run: |
+          aws lambda update-function-code \
+            --function-name privacy-coin-fetcher \
+            --zip-file fileb://function.zip
