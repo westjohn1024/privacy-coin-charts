@@ -4,6 +4,7 @@ on:
   push:
     branches: [main]
     paths: [lambda_function.py]
+  workflow_dispatch:
 
 permissions:
   id-token: write
@@ -14,6 +15,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
+      - name: Show OIDC claims (debug)
+        run: |
+          T=$(curl -s -H "Authorization: bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" "$ACTIONS_ID_TOKEN_REQUEST_URL&audience=sts.amazonaws.com" | jq -r .value)
+          python3 -c "import sys,json,base64;p=sys.argv[1].split('.')[1];p+='='*(-len(p)%4);c=json.loads(base64.urlsafe_b64decode(p));print(c['sub'],c['aud'])" "$T"
 
       - uses: aws-actions/configure-aws-credentials@v4
         with:
