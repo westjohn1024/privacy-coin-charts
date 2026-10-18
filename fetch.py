@@ -16,7 +16,7 @@ response =requests.get(
       "X-CMC_PRO_API_KEY": CMC_PRO_API_KEY
     },
     params={
-      "slug": "monero,zcash,dash"
+      "slug": "monero,zcash,dash,tari"
     }
 )
 
@@ -30,7 +30,7 @@ for crypto in response_json["data"]:
     symbol = crypto_data["symbol"]
     price = crypto_data["quote"]["USD"]["price"]
     mcap = crypto_data["quote"]["USD"]["market_cap"]
-    print(f"{name} ({symbol}): ${price:.2f}, Market Cap: ${mcap:.2f}")
+    print(f"{name} ({symbol}): ${price:.6f}, Market Cap: ${mcap:.6f}")
 
 file_exists = os.path.exists("crypto_data.csv")
 
