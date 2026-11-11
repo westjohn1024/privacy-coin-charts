@@ -6,7 +6,14 @@ from aws_cdk import (
     aws_s3 as s3,
     aws_lambda as _lambda,
     aws_ssm as ssm,
+    aws_events as events,
+    aws_events_targets as targets,
+    aws_sns as sns,
+    aws_sns_subscriptions as subs,
+    aws_cloudwatch as cloudwatch,
+    aws_cloudwatch_actions as cw_actions,
 )
+
 from constructs import Construct
 
 
@@ -43,6 +50,30 @@ class InfraStack(Stack):
             self, "CmcKey", parameter_name="/privacy-coins/cmc-api-key"
         )
         cmc_key.grant_read(fn)
+
+        # Run at 00:00, 06:00, 12:00 and 18:00 UTC.
+        events.Rule(
+            self, "FourTimesDaily",
+            schedule=events.Schedule.cron(minute="0", hour="0,6,12,18"),
+            targets=[targets.LambdaFunction(fn, retry_attempts=2)],
+        )
+
+        # Email me if the function errors.
+        alert_email = self.node.try_get_context("alert_email")
+        topic = sns.Topic(self, "Alerts")
+        if alert_email:
+            topic.add_subscription(subs.EmailSubscription(alert_email))
+
+        alarm = cloudwatch.Alarm(
+            self, "FetcherErrors",
+            metric=fn.metric_errors(period=Duration.hours(1)),
+            threshold=1,
+            evaluation_periods=1,
+            comparison_operator=cloudwatch.ComparisonOperator.GREATER_THAN_OR_EQUAL_TO_THRESHOLD,
+            treat_missing_data=cloudwatch.TreatMissingData.NOT_BREACHING,
+            alarm_description="privacy-coin fetcher failed at least once in the last hour",
+        )
+        alarm.add_alarm_action(cw_actions.SnsAction(topic))
 
         CfnOutput(self, "BucketName", value=bucket.bucket_name)
         CfnOutput(self, "FunctionName", value=fn.function_name)
