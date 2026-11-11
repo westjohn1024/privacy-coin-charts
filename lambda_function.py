@@ -16,7 +16,7 @@ import logging
 import os
 import urllib.parse
 import urllib.request
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 import boto3
 from botocore.exceptions import ClientError
@@ -60,11 +60,11 @@ def lambda_handler(event, context):
     key = os.environ.get("CSV_KEY", "crypto_data.csv")
     slugs = os.environ.get("SLUGS", "monero,zcash,dash,tari")
 
-    timestamp = datetime.now(timezone.utc).isoformat()
+    timestamp = datetime.now(UTC).isoformat()
     response_json = fetch_quotes(api_key, slugs)
 
     rows = []
-    for crypto_id, crypto_data in response_json["data"].items():
+    for crypto_data in response_json["data"].items():
         usd = crypto_data["quote"]["USD"]
         row = {
             "timestamp": timestamp,

@@ -1,9 +1,9 @@
-from datetime import datetime, timezone
-import os
-from dotenv import load_dotenv
-import requests
-import json
 import csv
+import os
+from datetime import UTC, datetime
+
+import requests
+from dotenv import load_dotenv
 
 load_dotenv()
 
@@ -20,7 +20,7 @@ response =requests.get(
     }
 )
 
-timestamp = datetime.now(timezone.utc).isoformat()
+timestamp = datetime.now(UTC).isoformat()
 response.raise_for_status()
 response_json = response.json()
 
