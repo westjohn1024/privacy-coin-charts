@@ -64,7 +64,7 @@ def lambda_handler(event, context):
     response_json = fetch_quotes(api_key, slugs)
 
     rows = []
-    for crypto_data in response_json["data"].items():
+    for crypto_data in response_json["data"].values():
         usd = crypto_data["quote"]["USD"]
         row = {
             "timestamp": timestamp,
