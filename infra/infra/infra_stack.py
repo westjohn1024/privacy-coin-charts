@@ -1,19 +1,36 @@
 from aws_cdk import (
-    Stack,
+    CfnOutput,
     Duration,
     RemovalPolicy,
-    CfnOutput,
-    aws_s3 as s3,
-    aws_lambda as _lambda,
-    aws_ssm as ssm,
-    aws_events as events,
-    aws_events_targets as targets,
-    aws_sns as sns,
-    aws_sns_subscriptions as subs,
+    Stack,
+)
+from aws_cdk import (
     aws_cloudwatch as cloudwatch,
+)
+from aws_cdk import (
     aws_cloudwatch_actions as cw_actions,
 )
-
+from aws_cdk import (
+    aws_events as events,
+)
+from aws_cdk import (
+    aws_events_targets as targets,
+)
+from aws_cdk import (
+    aws_lambda as _lambda,
+)
+from aws_cdk import (
+    aws_s3 as s3,
+)
+from aws_cdk import (
+    aws_sns as sns,
+)
+from aws_cdk import (
+    aws_sns_subscriptions as subs,
+)
+from aws_cdk import (
+    aws_ssm as ssm,
+)
 from constructs import Construct
 
 
