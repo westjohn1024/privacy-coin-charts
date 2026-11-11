@@ -1,9 +1,12 @@
-name: Deploy Lambda
+name: Deploy CDK stack
 
 on:
   push:
     branches: [main]
-    paths: [lambda_function.py]
+    paths:
+      - lambda_function.py
+      - infra/**
+      - .github/workflows/deploy.yml
   workflow_dispatch:
 
 permissions:
@@ -13,19 +16,24 @@ permissions:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: infra
     steps:
       - uses: actions/checkout@v4
-
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Install CDK
+        run: |
+          npm install -g aws-cdk
+          pip install -r requirements.txt
       - uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: arn:aws:iam::107368385134:role/github-deploy-privacy-coins
           aws-region: us-east-2
-
-      - name: Zip the code
-        run: zip function.zip lambda_function.py
-
-      - name: Deploy to Lambda
-        run: |
-          aws lambda update-function-code \
-            --function-name privacy-coin-fetcher \
-            --zip-file fileb://function.zip
+      - name: Deploy
+        run: cdk deploy --require-approval never
