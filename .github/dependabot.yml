@@ -4,8 +4,11 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
-  # add a second entry here for pip
+  
   - package-ecosystem: "pip"
-    directory: "/"
+      directories:
+      - "/"
+      - "/infra"
     schedule:
       interval: "weekly"
+      
