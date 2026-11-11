@@ -1,6 +1,5 @@
 import aws_cdk as core
 from aws_cdk import assertions
-
 from infra.infra_stack import InfraStack
 
 
