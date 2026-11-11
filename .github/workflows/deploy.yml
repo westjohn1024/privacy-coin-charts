@@ -31,7 +31,7 @@ jobs:
         run: |
           npm install -g aws-cdk
           pip install -r requirements.txt
-      - uses: aws-actions/configure-aws-credentials@v4
+      - uses: aws-actions/configure-aws-credentials@v6
         with:
           role-to-assume: arn:aws:iam::107368385134:role/github-deploy-privacy-coins
           aws-region: us-east-2
