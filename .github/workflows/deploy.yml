@@ -36,4 +36,6 @@ jobs:
           role-to-assume: arn:aws:iam::107368385134:role/github-deploy-privacy-coins
           aws-region: us-east-2
       - name: Deploy
-        run: cdk deploy --require-approval never
+        env:
+          ALERT_EMAIL: ${{ secrets.ALERT_EMAIL }}
+        run: cdk deploy --require-approval never -c alert_email="$ALERT_EMAIL"
