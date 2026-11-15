@@ -1,12 +1,14 @@
 """
-AWS Lambda: fetch Monero, Zcash and Dash quotes from CoinMarketCap
+AWS Lambda: fetch Monero, Zcash, Dash and Minotari quotes from CoinMarketCap
 and append them to a CSV file stored in S3.
 
+The CoinMarketCap Pro API key is read from AWS Parameter Store at
+/privacy-coins/cmc-api-key (it is not an environment variable).
+
 Environment variables:
-  CMC_API_KEY  - CoinMarketCap Pro API key from parameter store (required)
   BUCKET_NAME  - S3 bucket that holds the CSV (required)
   CSV_KEY      - object key for the CSV (default: crypto_data.csv)
-  SLUGS        - comma-separated CoinMarketCap slugs (default: monero,zcash,dash)
+  SLUGS        - comma-separated CoinMarketCap slugs (default: monero,zcash,dash,tari)
 """
 
 import csv
