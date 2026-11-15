@@ -8,3 +8,12 @@ def test_fetcher_lambda_created():
     stack = InfraStack(app, "infra")
     template = assertions.Template.from_stack(stack)
     template.resource_count_is("AWS::Lambda::Function", 1)
+
+
+def test_dashboard_role_created():
+    app = core.App()
+    stack = InfraStack(app, "infra")
+    template = assertions.Template.from_stack(stack)
+    template.has_resource_properties(
+        "AWS::IAM::Role", {"RoleName": "github-dashboard-privacy-coins"}
+    )

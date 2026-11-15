@@ -17,6 +17,9 @@ from aws_cdk import (
     aws_events_targets as targets,
 )
 from aws_cdk import (
+    aws_iam as iam,
+)
+from aws_cdk import (
     aws_lambda as _lambda,
 )
 from aws_cdk import (
@@ -92,5 +95,30 @@ class InfraStack(Stack):
         )
         alarm.add_alarm_action(cw_actions.SnsAction(topic))
 
+        # Read-only role for a GitHub Actions workflow (dashboard build).
+        # Imports the GitHub OIDC provider that already exists in the account.
+        github_provider = iam.OpenIdConnectProvider.from_open_id_connect_provider_arn(
+            self, "GithubOidc",
+            "arn:aws:iam::107368385134:oidc-provider/token.actions.githubusercontent.com",
+        )
+        dashboard_role = iam.Role(
+            self, "DashboardRole",
+            role_name="github-dashboard-privacy-coins",
+            assumed_by=iam.OpenIdConnectPrincipal(
+                github_provider,
+                conditions={
+                    "StringEquals": {
+                        "token.actions.githubusercontent.com:aud": "sts.amazonaws.com",
+                        "token.actions.githubusercontent.com:sub": (
+                            "repo:westjohn1024@195674753/privacy-coin-charts@1404588534"
+                            ":ref:refs/heads/main"
+                        ),
+                    }
+                },
+            ),
+        )
+        bucket.grant_read(dashboard_role)
+
         CfnOutput(self, "BucketName", value=bucket.bucket_name)
         CfnOutput(self, "FunctionName", value=fn.function_name)
+        CfnOutput(self, "DashboardRoleArn", value=dashboard_role.role_arn)
