@@ -40,3 +40,11 @@ jobs:
 
       - name: Run pytest
         run: pytest --maxfail=1 --disable-warnings -q
+
+      - name: Install dashboard dependencies
+        working-directory: .
+        run: pip install -r dashboard/requirements.txt
+
+      - name: Run dashboard tests
+        working-directory: .
+        run: pytest --maxfail=1 --disable-warnings -q dashboard/tests

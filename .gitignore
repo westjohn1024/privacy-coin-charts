@@ -222,3 +222,6 @@ __marimo__/
 
 # CSV files
 *.csv
+
+# Sample data for dashboard tests
+!dashboard/tests/sample.csv
