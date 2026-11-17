@@ -1,0 +1,53 @@
+name: Dashboard
+
+on:
+  schedule:
+    - cron: "15 0,6,12,18 * * *"   # 15 minutes after each Lambda run (UTC)
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write   # lets the build job log in to AWS with OIDC
+  pages: write      # lets the deploy job publish to GitHub Pages
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.13"
+
+      - name: Install dashboard dependencies
+        run: pip install -r dashboard/requirements.txt
+
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::107368385134:role/github-dashboard-privacy-coins
+          aws-region: us-east-2
+
+      - name: Download the CSV from S3
+        run: aws s3 cp "s3://${{ vars.DATA_BUCKET }}/crypto_data.csv" data.csv
+
+      - name: Build the page
+        run: python dashboard/build.py data.csv site
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
